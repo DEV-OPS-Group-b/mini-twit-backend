@@ -1,0 +1,7 @@
+package com.itu.minitwitbackend.exception;
+
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(String message) {
+        super(message);
+    }
+}
