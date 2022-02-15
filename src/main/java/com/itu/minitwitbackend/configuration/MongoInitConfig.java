@@ -20,6 +20,7 @@ public class MongoInitConfig {
     }
 
     private List<UserEntity> createMockUserEntity() {
+
         return new ArrayList<>() {
             {
                 add(UserEntity.builder()
