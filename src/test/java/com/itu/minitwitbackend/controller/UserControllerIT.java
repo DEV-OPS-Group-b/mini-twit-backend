@@ -43,11 +43,12 @@ public class UserControllerIT {
        var useId = userRepository.save(testUser).getId();
         // act
         ResponseEntity<UserEntity> responseEntity = testRestTemplate.getForEntity(
-                "/devops/user/getUser/"+useId,  UserEntity.class);
+                "/devops/user/getUser/she",  UserEntity.class);
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody().getUsername()).isEqualTo("she");
+        assertThat(responseEntity.getBody().getId()).isEqualTo(useId);
         assertThat(responseEntity.getBody().getEmail()).isEqualTo("mail@mail.com");
         assertThat(responseEntity.getBody().getPassword()).isEqualTo("pas");
 

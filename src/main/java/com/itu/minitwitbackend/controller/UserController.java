@@ -27,9 +27,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/getUser/{id}")
-    public ResponseEntity<UserEntity> getUserById(@PathVariable String id) {
-        return ResponseEntity.ok(userService.getUser(id).get());
+    @GetMapping("/getUser/{username}")
+    public ResponseEntity<UserEntity> getUserById(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getUser(username).get());
     }
 
     @PostMapping("/register")

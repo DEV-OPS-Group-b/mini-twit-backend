@@ -21,9 +21,9 @@ public class UserService {
         this.repository = repository;
     }
 
-    public Optional<UserEntity> getUser(String userId) {
-        log.info("getting user with id {} ", userId);
-        var user = repository.findById(userId)
+    public Optional<UserEntity> getUser(String username) {
+        log.info("getting user with username {} ", username);
+        var user = repository.findUserEntityByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found in the database"));
         return Optional.of(user);
     }
