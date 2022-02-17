@@ -28,7 +28,7 @@ public class UserControllerIT {
     private UserEntity testUser = UserEntity.builder()
             .username("she")
             .password("pas")
-            .email("mail")
+            .email("mail@mail.com")
             .profilePicture("no pic")
             .build();
 
@@ -48,7 +48,7 @@ public class UserControllerIT {
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody().getUsername()).isEqualTo("she");
-        assertThat(responseEntity.getBody().getEmail()).isEqualTo("mail");
+        assertThat(responseEntity.getBody().getEmail()).isEqualTo("mail@mail.com");
         assertThat(responseEntity.getBody().getPassword()).isEqualTo("pas");
 
     }
@@ -70,22 +70,33 @@ public class UserControllerIT {
         // arrange
         // act
         ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(
-                "/devops/user/createUser", testUser, String.class);
+                "/devops/user/register", testUser, String.class);
 
         // assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+    @Test
+    void create_User_BadRequest() {
+        // arrange
+        // act
+        var use = new UserEntity();
+        ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(
+                "/devops/user/register", use, String.class);
+
+        // assert
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
     @Test
     void create_User_AlreadyExists() {
         // arrange
         userRepository.save(testUser).getId();
         // act
         ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(
-                "/devops/user/createUser", testUser, String.class);
+                "/devops/user/register", testUser, String.class);
 
         // assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.ALREADY_REPORTED);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 
     }
 

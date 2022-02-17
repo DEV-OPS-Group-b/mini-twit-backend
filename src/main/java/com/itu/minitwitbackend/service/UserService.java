@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class UserService {
-    // TODO add logs
     private final UserRepository repository;
 
     @Autowired
@@ -32,9 +31,9 @@ public class UserService {
     public String createNewUser(UserEntity user) {
         log.info("creating a new user {} ", user.toString());
 
-        if (repository.findUserEntityByEmailAndAndUsername(user.getEmail(), user.getUsername()).isPresent()) {
-            log.error("user already exists");
-            throw new UserAlreadyExistsException("user already exists");
+        if (repository.findUserEntityByUsername(user.getUsername()).isPresent()) {
+            log.error("The username is already taken");
+            throw new UserAlreadyExistsException("The username is already taken");
         }
         // TODO make the url for the image
         var userId = repository.save(user).getId();

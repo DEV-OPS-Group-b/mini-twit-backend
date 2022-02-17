@@ -1,6 +1,11 @@
 package com.itu.minitwitbackend.repository.entity;
 
 import java.util.List;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -25,9 +30,17 @@ public class UserEntity {
     @Id
     @Indexed
     private String id;
+
+    @NotEmpty(message = "You have to enter a username")
     private String username;
+
+    @NotEmpty(message = "You have to enter a valid email address")
+    @Email(message = "You have to enter a valid email address", flags = { Pattern.Flag.CASE_INSENSITIVE })
     private String email;
+
+    @NotEmpty(message = "You have to enter a password")
     private String password;
+
     private String profilePicture;
     private List<String> following;
 
