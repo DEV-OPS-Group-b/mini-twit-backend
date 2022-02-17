@@ -28,7 +28,7 @@ public class UserService {
         return Optional.of(user);
     }
 
-    public String createNewUser(UserEntity user) {
+    public void createNewUser(UserEntity user) {
         log.info("creating a new user {} ", user.toString());
 
         if (repository.findUserEntityByUsername(user.getUsername()).isPresent()) {
@@ -37,8 +37,7 @@ public class UserService {
         }
         // TODO make the url for the image
         var userId = repository.save(user).getId();
-        log.info("new created userId {} ", userId);
-        return userId;
+        log.info("newly created userId {} ", userId);
     }
 
     public void validateUserCredentials(String username, String password) {

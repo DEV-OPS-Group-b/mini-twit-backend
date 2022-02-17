@@ -73,7 +73,7 @@ public class UserControllerIT {
                 "/devops/user/register", testUser, String.class);
 
         // assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
     @Test
     void create_User_BadRequest() {
