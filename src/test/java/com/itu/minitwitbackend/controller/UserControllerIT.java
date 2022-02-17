@@ -1,5 +1,6 @@
 package com.itu.minitwitbackend.controller;
 
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.itu.minitwitbackend.controller.api.model.FollowUserRequest;
 import com.itu.minitwitbackend.repository.UserRepository;
 import com.itu.minitwitbackend.repository.entity.UserEntity;
 
@@ -76,13 +78,14 @@ public class UserControllerIT {
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
+
     @Test
     void create_User_BadRequest() {
         // arrange
         // act
-        var use = new UserEntity();
+        var user = new UserEntity();
         ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(
-                "/devops/user/register", use, String.class);
+                "/devops/user/register", user, String.class);
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -123,5 +126,40 @@ public class UserControllerIT {
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
+    }
+
+    @Test
+    void follow_User_Success() {
+        // arrange
+        var savedUser = userRepository.save(testUser);
+        var user = new FollowUserRequest(testUser.getUsername(),"he");
+
+        // act
+        ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(
+                "/devops/user/follow", user, String.class);
+
+        var user2 = userRepository.findById(savedUser.getId());
+
+        // assert
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(user2.get().getFollowers().size()).isEqualTo(1);
+    }
+
+    @Test
+    void unfollow_User_Success() {
+        // arrange
+        testUser.setFollowers(new ArrayList<>(){{add("me");}});
+        var savedUser = userRepository.save(testUser);
+        var user = new FollowUserRequest(testUser.getUsername(),"me");
+
+        // act
+        ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(
+                "/devops/user/unfollow", user, String.class);
+
+        var user2 = userRepository.findById(savedUser.getId());
+
+        // assert
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(user2.get().getFollowers().size()).isEqualTo(0);
     }
 }

@@ -14,10 +14,10 @@ import com.itu.minitwitbackend.repository.entity.UserEntity;
 @EnableMongoRepositories(basePackageClasses = UserRepository.class)
 public class MongoInitConfig {
 
-    @Bean
-    CommandLineRunner commandLineRunner(UserRepository userRepository) {
-        return strings -> userRepository.saveAll(createMockUserEntity());
-    }
+//    @Bean
+//    CommandLineRunner commandLineRunner(UserRepository userRepository) {
+//        return strings -> userRepository.saveAll(createMockUserEntity());
+//    }
 
     private List<UserEntity> createMockUserEntity() {
 

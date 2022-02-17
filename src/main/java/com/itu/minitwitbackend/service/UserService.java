@@ -1,9 +1,15 @@
 package com.itu.minitwitbackend.service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.itu.minitwitbackend.controller.api.model.FollowUserRequest;
 import com.itu.minitwitbackend.exception.InvalidCredentialsException;
 import com.itu.minitwitbackend.exception.UserAlreadyExistsException;
 import com.itu.minitwitbackend.exception.UserNotFoundException;
@@ -16,15 +22,18 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
     private final UserRepository repository;
 
+    private final MongoTemplate template;
+
     @Autowired
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, MongoTemplate template) {
         this.repository = repository;
+        this.template = template;
     }
 
     public Optional<UserEntity> getUser(String username) {
         log.info("getting user with username {} ", username);
         var user = repository.findUserEntityByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found in the database"));
+                .orElseThrow(() -> new UserNotFoundException("User not found in the database" + username));
         return Optional.of(user);
     }
 
@@ -45,9 +54,37 @@ public class UserService {
                 .ifPresentOrElse(u ->
                                 log.info("user {} has valid credentials, log in successfully ", username)
                         , () -> {
-                            log.error("user {} has valid credentials, log in failed", username);
-                            throw new InvalidCredentialsException("credentials are not valid");
+                            log.error("user {} has invalid credentials, log in failed", username);
+                            throw new InvalidCredentialsException("credentials are invalid");
                         });
 
     }
+
+    public void followUser(FollowUserRequest followUserRequest) {
+        var currentUser = getUser(followUserRequest.getCurrentUsername());
+
+        var followers = currentUser.get().getFollowers();
+        if (followers != null && followers.size() > 0)
+            currentUser.get().getFollowers().add(followUserRequest.getTargetUsername());
+        else {
+            currentUser.get().setFollowers(new ArrayList<>() {
+                {
+                    add(followUserRequest.getTargetUsername());
+                }
+            });
+        }
+
+        repository.save(currentUser.get());
+    }
+
+    public void unfollowUser(FollowUserRequest followUserRequest) {
+        var currentUser = getUser(followUserRequest.getCurrentUsername());
+        var followers = currentUser.get().getFollowers();
+        if (followers != null && followers.contains(followUserRequest.getTargetUsername())) {
+            followers.remove(followUserRequest.getTargetUsername());
+        }
+        repository.save(currentUser.get());
+    }
+
 }
+

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.itu.minitwitbackend.controller.api.model.FollowUserRequest;
 import com.itu.minitwitbackend.repository.entity.UserEntity;
 import com.itu.minitwitbackend.service.UserService;
 
@@ -42,5 +43,17 @@ public class UserController {
     public ResponseEntity login(@PathVariable String username, @PathVariable String password) {
         userService.validateUserCredentials(username, password);
         return new ResponseEntity(HttpStatus.FOUND);
+    }
+
+    @PostMapping("/follow")
+    public ResponseEntity<String> followUser(@RequestBody FollowUserRequest followUserRequest) {
+        userService.followUser(followUserRequest);
+        return new ResponseEntity<>("done", HttpStatus.OK);
+    }
+
+    @PostMapping("/unfollow")
+    public ResponseEntity<String> unfollowUser(@Valid @RequestBody FollowUserRequest followUserRequest) {
+        userService.unfollowUser(followUserRequest);
+        return new ResponseEntity<>("done", HttpStatus.OK);
     }
 }
