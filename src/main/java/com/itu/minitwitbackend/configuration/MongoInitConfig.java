@@ -50,6 +50,13 @@ public class MongoInitConfig {
                         .email("he@gmail.com")
                         .password("password")
                         .following(new ArrayList<>()).build());
+
+                add(UserEntity.builder()
+                        .username("admin")
+                        .email("admin@admin.com")
+                        .password("admin")
+                        .isAdmin(true)
+                        .following(new ArrayList<>()).build());
             }
         };
 

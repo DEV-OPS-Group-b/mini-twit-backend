@@ -42,6 +42,9 @@ public class UserEntity {
     private String password;
 
     private String profilePicture;
+
+    private Boolean isAdmin;
+
     private List<String> following;
 
 }
