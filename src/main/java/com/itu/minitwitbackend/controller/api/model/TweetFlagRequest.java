@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 public class TweetFlagRequest {
     @NotEmpty(message = "please provide tweet id")
     private String tweetId;
+    @NotEmpty(message = "please provide username")
+    private String username;
+    @NotEmpty(message = "please provide password")
+    private String password;
     @NotNull
     private Boolean flag;
 }

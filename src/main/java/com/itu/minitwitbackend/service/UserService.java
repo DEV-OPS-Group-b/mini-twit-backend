@@ -42,6 +42,7 @@ public class UserService {
             throw new UserAlreadyExistsException("The username is already taken");
         }
         // TODO make the url for the image
+        user.setIsAdmin(false);
         var userId = repository.save(user).getId();
         log.info("newly created userId {} ", userId);
     }

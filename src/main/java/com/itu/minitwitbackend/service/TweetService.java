@@ -3,49 +3,73 @@ package com.itu.minitwitbackend.service;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.itu.minitwitbackend.controller.api.model.TweetFlagRequest;
-import com.itu.minitwitbackend.exception.InvalidCredentialsException;
 import com.itu.minitwitbackend.exception.TweetNotFoundException;
+import com.itu.minitwitbackend.exception.UnauthorizedException;
+import com.itu.minitwitbackend.exception.UserNotFoundException;
 import com.itu.minitwitbackend.repository.TweetRepository;
+import com.itu.minitwitbackend.repository.UserRepository;
 import com.itu.minitwitbackend.repository.entity.TweetEntity;
+import com.itu.minitwitbackend.repository.entity.UserEntity;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class TweetService {
-    private final TweetRepository repository;
+    private final TweetRepository tweetRepository;
 
-    public TweetService(TweetRepository repository) {
-        this.repository = repository;
+    private final UserRepository userRepository;
+
+    public TweetService(TweetRepository tweetRepository, UserRepository userRepository) {
+        this.tweetRepository = tweetRepository;
+        this.userRepository = userRepository;
     }
 
     public List<TweetEntity> findByUsername(String username) {
-        return repository.findByUsername(username);
+        return tweetRepository.findByUsername(username);
     }
 
     public List<TweetEntity> getAllTweetsSorted() {
-        var sortedTweets = repository.findAll();
+        var sortedTweets = tweetRepository.findAll();
         Collections.sort(sortedTweets, Comparator.comparing(TweetEntity::getInsertionDate).reversed());
         return sortedTweets;
     }
 
     public TweetEntity saveTweet(TweetEntity tweet) {
-        return repository.save(tweet);
+        return tweetRepository.save(tweet);
     }
 
     public void flagTweet(TweetFlagRequest tweetFlagRequest) {
-        repository.findById(tweetFlagRequest.getTweetId()).ifPresentOrElse(tweet -> {
+        var user = userRepository.findByUsernameAndPassword(
+                tweetFlagRequest.getUsername(), tweetFlagRequest.getPassword());
+        validateUserPermission(user);
+        updateTweetWithFlag(tweetFlagRequest);
+
+    }
+
+    private void updateTweetWithFlag(TweetFlagRequest tweetFlagRequest) {
+
+        tweetRepository.findById(tweetFlagRequest.getTweetId()).ifPresentOrElse(tweet -> {
                     log.info("tweet {} is flagged updated successfully ", tweetFlagRequest.getTweetId());
                     tweet.setFlagged(true);
-                    repository.save(tweet);
+                    tweetRepository.save(tweet);
                 }
                 , () -> {
                     log.error("tweet {} has not been flagged since it is not found", tweetFlagRequest.getTweetId());
                     throw new TweetNotFoundException("tweet not found");
                 });
+    }
 
+
+    private void validateUserPermission(Optional<UserEntity> user) {
+        if (user.isPresent() || user.get().getIsAdmin() == null && !user.get().getIsAdmin()) {
+            throw new UnauthorizedException("this user does not have permission to flag this tweet");
+        }
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("we do not have such user");
+        }
     }
 }

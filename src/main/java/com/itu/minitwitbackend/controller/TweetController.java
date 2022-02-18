@@ -1,19 +1,15 @@
 package com.itu.minitwitbackend.controller;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itu.minitwitbackend.controller.api.model.TweetFlagRequest;
-import com.itu.minitwitbackend.repository.TweetRepository;
 import com.itu.minitwitbackend.repository.entity.TweetEntity;
 import com.itu.minitwitbackend.service.TweetService;
 
@@ -48,4 +44,5 @@ public class TweetController {
         tweetService.flagTweet(tweetFlagRequest);
         return ResponseEntity.ok("flag updated successfully");
     }
+
 }

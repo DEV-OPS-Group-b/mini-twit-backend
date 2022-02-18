@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.itu.minitwitbackend.exception.InvalidCredentialsException;
 import com.itu.minitwitbackend.exception.TweetNotFoundException;
+import com.itu.minitwitbackend.exception.UnauthorizedException;
 import com.itu.minitwitbackend.exception.UserAlreadyExistsException;
 import com.itu.minitwitbackend.exception.UserNotFoundException;
 import lombok.AllArgsConstructor;
@@ -57,6 +58,14 @@ public class ControllerAdvice {
             UserNotFoundException ex) {
         log.warn("UserNotFoundException message={}", ex.getMessage());
         return handleException(request, ex.getMessage(), ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorInfo> handleUnauthorizedException(
+            HttpServletRequest request,
+            UnauthorizedException ex) {
+        log.warn("UnauthorizedException message={}", ex.getMessage());
+        return handleException(request, ex.getMessage(), ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(TweetNotFoundException.class)
