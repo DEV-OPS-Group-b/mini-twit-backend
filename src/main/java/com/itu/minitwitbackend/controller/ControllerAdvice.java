@@ -31,7 +31,7 @@ public class ControllerAdvice {
     public ResponseEntity<ErrorInfo> handleInvalidCredentialsException(
             HttpServletRequest request,
             InvalidCredentialsException ex) {
-        log.warn("InvalidCredentialsException message={}", ex.getMessage());
+        log.warn("InvalidCredentialsException message={} ", ex.getMessage());
         return handleException(request, ex.getMessage(), ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -39,14 +39,14 @@ public class ControllerAdvice {
     public ResponseEntity<ErrorInfo> handleUserAlreadyExistsException(
             HttpServletRequest request,
             UserAlreadyExistsException ex) {
-        log.warn("UserAlreadyExistsException message={}", ex.getMessage());
+        log.warn("UserAlreadyExistsException message={} ", ex.getMessage());
         return handleException(request, ex.getMessage(), ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorInfo> handleMethodArgumentNotValidException(HttpServletRequest request,
                                                                            MethodArgumentNotValidException ex) {
-        log.warn("MethodArgumentNotValidException message={}", ex.getMessage());
+        log.warn("MethodArgumentNotValidException message={} ", ex.getMessage());
         var errorMessage = mapBindingError(ex.getBindingResult());
         return handleException(request, "Model validation error, please make sure to meet our properties validation",
                 errorMessage, HttpStatus.BAD_REQUEST);
@@ -64,7 +64,7 @@ public class ControllerAdvice {
     public ResponseEntity<ErrorInfo> handleUnauthorizedException(
             HttpServletRequest request,
             UnauthorizedException ex) {
-        log.warn("UnauthorizedException message={}", ex.getMessage());
+        log.warn("UnauthorizedException message={} ", ex.getMessage());
         return handleException(request, ex.getMessage(), ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -72,7 +72,7 @@ public class ControllerAdvice {
     public ResponseEntity<ErrorInfo> handleTweetNotFoundException(
             HttpServletRequest request,
             TweetNotFoundException ex) {
-        log.warn("TweetNotFoundException message={}", ex.getMessage());
+        log.warn("TweetNotFoundException message={} ", ex.getMessage());
         return handleException(request, ex.getMessage(), ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 

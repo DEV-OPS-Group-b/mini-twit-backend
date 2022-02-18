@@ -30,7 +30,7 @@ public class UserService {
     public Optional<UserEntity> getUser(String username) {
         log.info("getting user with username {} ", username);
         var user = repository.findUserEntityByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("User not found in the database" + username));
+                .orElseThrow(() -> new UserNotFoundException("User not found in the database " + username));
         return Optional.of(user);
     }
 
@@ -66,9 +66,19 @@ public class UserService {
 
     private void updateFollowing(Optional<UserEntity> currentUser, FollowUserRequest followUserRequest) {
         var followers = currentUser.get().getFollowing();
-        if (followers != null && followers.size() > 0)
+        if (followers != null && followers.size() > 0){
+            if(followers.contains(followUserRequest.getTargetUsername())){
+                log.info("the user {} is already following username : {}",
+                        followUserRequest.getCurrentUsername(),followUserRequest.getTargetUsername());
+                return;
+            }
+            log.info(" adding username {} to the following list of user {} ", followUserRequest.getTargetUsername(),
+                    followUserRequest.getCurrentUsername());
             currentUser.get().getFollowing().add(followUserRequest.getTargetUsername());
+        }
         else {
+            log.info(" adding username {} to the following list of user {} ", followUserRequest.getTargetUsername(),
+                    followUserRequest.getCurrentUsername());
             currentUser.get().setFollowing(new ArrayList<>() {
                 {
                     add(followUserRequest.getTargetUsername());
@@ -81,9 +91,16 @@ public class UserService {
         var currentUser = getUser(followUserRequest.getCurrentUsername());
         var followers = currentUser.get().getFollowing();
         if (followers != null && followers.contains(followUserRequest.getTargetUsername())) {
+
+            log.info("removing username {} from the following list of username {} ",
+                     followUserRequest.getTargetUsername(),followUserRequest.getCurrentUsername());
+
             followers.remove(followUserRequest.getTargetUsername());
+            repository.save(currentUser.get());
+        } else {
+            log.info("the username {} does not exist in the following list of username {} ",
+                    followUserRequest.getTargetUsername(),followUserRequest.getCurrentUsername());
         }
-        repository.save(currentUser.get());
     }
 
     public boolean isFollowing(FollowUserRequest followUserRequest) {

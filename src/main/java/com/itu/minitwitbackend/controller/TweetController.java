@@ -23,18 +23,18 @@ public class TweetController {
         this.tweetService = tweetService;
     }
 
-    @GetMapping("/getAllUserTweets/{username}")
+    @GetMapping("/get-user-tweets/{username}")
     public ResponseEntity<List<TweetEntity>> getUserTweets(@PathVariable String username) {
         return ResponseEntity.ok(tweetService.findByUsername(username));
     }
 
-    @GetMapping("/getAllTweets")
+    @GetMapping("/get-all-tweets")
     public ResponseEntity<List<TweetEntity>> getAllTweets() {
 
         return ResponseEntity.ok(tweetService.getAllTweetsSorted());
     }
 
-    @PostMapping("/addTweet")
+    @PostMapping("/add-tweet")
     public ResponseEntity<TweetEntity> addTweets(@RequestBody TweetEntity tweet) {
         return ResponseEntity.ok(tweetService.saveTweet(tweet));
     }

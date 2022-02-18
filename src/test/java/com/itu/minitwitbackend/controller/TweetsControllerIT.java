@@ -2,6 +2,7 @@ package com.itu.minitwitbackend.controller;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,7 @@ import com.itu.minitwitbackend.repository.UserRepository;
 import com.itu.minitwitbackend.repository.entity.TweetEntity;
 import com.itu.minitwitbackend.repository.entity.UserEntity;
 
+import static com.itu.minitwitbackend.service.TweetService.DATE_TIME_FORMATTER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith({SpringExtension.class})
@@ -42,21 +44,21 @@ public class TweetsControllerIT {
         userRepository.deleteAll();
         tweetRepository.save(TweetEntity.builder()
                 .username("me")
-                .insertionDate(LocalDateTime.now())
+                .insertionDate(LocalDateTime.now().format(DATE_TIME_FORMATTER))
                 .tweet("my first tweet, hello there")
                 .flagged(false)
                 .build());
 
         tweetRepository.save(TweetEntity.builder()
                 .username("me")
-                .insertionDate(LocalDateTime.of(2000, 12, 2, 10, 05))
+                .insertionDate(LocalDateTime.of(2000, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
                 .tweet("my second tweet, hello there again")
                 .flagged(false)
                 .build());
 
         tweetRepository.save(TweetEntity.builder()
                 .username("you")
-                .insertionDate(LocalDateTime.of(1991, 12, 2, 10, 05))
+                .insertionDate(LocalDateTime.of(1991, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
                 .tweet("my last tweet, hello there")
                 .flagged(false)
                 .build());
@@ -68,25 +70,25 @@ public class TweetsControllerIT {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         // act
-        ResponseEntity<Object[]> responseEntity = testRestTemplate.getForEntity("/devops/tweet/getAllUserTweets/me", Object[].class);
+        ResponseEntity<Object[]> responseEntity = testRestTemplate.getForEntity("/devops/tweet/get-user-tweets/me", Object[].class);
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody().length).isEqualTo(2);
+        assertThat(Objects.requireNonNull(responseEntity.getBody()).length).isEqualTo(2);
 
     }
 
     @Test
-    void get_All_Tweets_Ok() throws NoSuchFieldException {
+    void get_All_Tweets_Ok() {
         // arrange
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         // act
-        ResponseEntity<Object[]> responseEntity = testRestTemplate.getForEntity("/devops/tweet/getAllTweets", Object[].class);
+        ResponseEntity<Object[]> responseEntity = testRestTemplate.getForEntity("/devops/tweet/get-all-tweets", Object[].class);
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody().length).isEqualTo(3);
+        assertThat(Objects.requireNonNull(responseEntity.getBody()).length).isEqualTo(3);
         var firstTweet = Arrays.stream(responseEntity.getBody()).findFirst().get().toString();
         assertThat(firstTweet.contains("my first tweet, hello there")).isTrue();
 
@@ -98,10 +100,9 @@ public class TweetsControllerIT {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         // act
-        ResponseEntity<TweetEntity> responseEntity = testRestTemplate.postForEntity("/devops/tweet/addTweet"
+        ResponseEntity<TweetEntity> responseEntity = testRestTemplate.postForEntity("/devops/tweet/add-tweet"
                 , TweetEntity.builder()
                         .username("me")
-                        .insertionDate(LocalDateTime.now())
                         .tweet("my second tweet, hello there again")
                         .build()
                 , TweetEntity.class);
@@ -117,11 +118,12 @@ public class TweetsControllerIT {
         // arrange
         var tweet = tweetRepository.save(TweetEntity.builder()
                 .username("random")
-                .insertionDate(LocalDateTime.of(2002, 12, 2, 10, 05))
+                .insertionDate(LocalDateTime.of(2002, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
                 .tweet("random tweet")
                 .flagged(false)
                 .build());
-        var admin = userRepository.save(UserEntity.builder()
+
+        userRepository.save(UserEntity.builder()
                 .username("admin")
                 .password("admin")
                 .isAdmin(true)
@@ -146,14 +148,13 @@ public class TweetsControllerIT {
     @Test
     void flag_Tweets_NotFound() {
         // arrange
-        // arrange
-        var tweet = tweetRepository.save(TweetEntity.builder()
+        tweetRepository.save(TweetEntity.builder()
                 .username("random")
-                .insertionDate(LocalDateTime.of(2002, 12, 2, 10, 05))
                 .tweet("random tweet")
                 .flagged(false)
                 .build());
-        var admin = userRepository.save(UserEntity.builder()
+
+        userRepository.save(UserEntity.builder()
                 .username("admin")
                 .password("admin")
                 .isAdmin(true)
@@ -179,7 +180,7 @@ public class TweetsControllerIT {
         // arrange
         var tweet = tweetRepository.save(TweetEntity.builder()
                 .username("random")
-                .insertionDate(LocalDateTime.of(2002, 12, 2, 10, 05))
+                .insertionDate(LocalDateTime.of(2002, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
                 .tweet("random tweet")
                 .flagged(false)
                 .build());
@@ -210,13 +211,13 @@ public class TweetsControllerIT {
     @Test
     void flag_Tweets_Unauthorized_Property_Not_Set() {
         // arrange
-        var tweet = tweetRepository.save(TweetEntity.builder()
+        tweetRepository.save(TweetEntity.builder()
                 .username("random")
-                .insertionDate(LocalDateTime.of(2002, 12, 2, 10, 05))
+                .insertionDate(LocalDateTime.of(2002, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
                 .tweet("random tweet")
                 .flagged(false)
                 .build());
-        var admin = userRepository.save(UserEntity.builder()
+        userRepository.save(UserEntity.builder()
                 .username("admin")
                 .password("admin")
                 .build());

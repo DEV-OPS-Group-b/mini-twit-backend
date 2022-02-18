@@ -20,7 +20,8 @@ public class TweetEntity {
     private String id;
     @Indexed
     private String username;
-    private LocalDateTime insertionDate;
+
+    private String insertionDate;
     private String tweet;
     private boolean flagged;
 

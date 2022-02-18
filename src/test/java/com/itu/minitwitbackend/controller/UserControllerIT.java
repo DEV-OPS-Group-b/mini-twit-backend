@@ -45,7 +45,7 @@ public class UserControllerIT {
        var useId = userRepository.save(testUser).getId();
         // act
         ResponseEntity<UserEntity> responseEntity = testRestTemplate.getForEntity(
-                "/devops/user/getUser/she",  UserEntity.class);
+                "/devops/user/get-user/she",  UserEntity.class);
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -61,7 +61,7 @@ public class UserControllerIT {
         // arrange
         // act
         ResponseEntity<UserEntity> responseEntity = testRestTemplate.getForEntity(
-                "/devops/user/getUser/INVALID",  UserEntity.class);
+                "/devops/user/get-user/INVALID",  UserEntity.class);
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

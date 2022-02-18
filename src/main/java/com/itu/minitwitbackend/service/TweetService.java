@@ -1,5 +1,7 @@
 package com.itu.minitwitbackend.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class TweetService {
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
     private final TweetRepository tweetRepository;
 
     private final UserRepository userRepository;
@@ -39,6 +43,8 @@ public class TweetService {
     }
 
     public TweetEntity saveTweet(TweetEntity tweet) {
+        LocalDateTime now = LocalDateTime.now();
+        tweet.setInsertionDate(now.format(DATE_TIME_FORMATTER));
         return tweetRepository.save(tweet);
     }
 
@@ -65,7 +71,7 @@ public class TweetService {
 
 
     private void validateUserPermission(Optional<UserEntity> user) {
-        if (user.isPresent() || user.get().getIsAdmin() == null && !user.get().getIsAdmin()) {
+        if (user.isPresent() && (user.get().getIsAdmin() == null || !user.get().getIsAdmin())) {
             throw new UnauthorizedException("this user does not have permission to flag this tweet");
         }
         if (user.isEmpty()) {
