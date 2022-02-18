@@ -193,4 +193,42 @@ public class UserControllerIT {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody().booleanValue()).isEqualTo(false);
     }
+
+    @Test
+    void follow_validate_isFollowing_Success() {
+        // arrange
+        var savedUser = userRepository.save(testUser);
+        var firstUser = new FollowUserRequest(testUser.getUsername(),"he");
+        var secondUser = new FollowUserRequest(testUser.getUsername(),"you");
+
+
+        // act
+        ResponseEntity<String> responseEntity0 = testRestTemplate.postForEntity(
+                "/devops/user/follow", firstUser, String.class);
+
+        // act
+        ResponseEntity<String> responseEntity1 = testRestTemplate.postForEntity(
+                "/devops/user/follow", secondUser, String.class);
+
+        var userFromDb = userRepository.findById(savedUser.getId());
+
+        // assert
+        assertThat(responseEntity0.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity1.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(userFromDb.get().getFollowing().size()).isEqualTo(2);
+       // ------- is following setup-------
+
+        // act
+        ResponseEntity<Boolean> responseEntity2 = testRestTemplate.postForEntity(
+                "/devops/user/isFollowing", firstUser, Boolean.class);
+
+        ResponseEntity<Boolean> responseEntity3 = testRestTemplate.postForEntity(
+                "/devops/user/isFollowing", secondUser, Boolean.class);
+
+        // assert
+        assertThat(responseEntity2.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity3.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity2.getBody().booleanValue()).isEqualTo(true);
+        assertThat(responseEntity3.getBody().booleanValue()).isEqualTo(true);
+    }
 }
