@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.itu.minitwitbackend.controller.api.model.FollowUserRequest;
@@ -62,29 +59,40 @@ public class UserService {
 
     public void followUser(FollowUserRequest followUserRequest) {
         var currentUser = getUser(followUserRequest.getCurrentUsername());
+        updateFollowing(currentUser, followUserRequest);
+        repository.save(currentUser.get());
+    }
 
-        var followers = currentUser.get().getFollowers();
+    private void updateFollowing(Optional<UserEntity> currentUser, FollowUserRequest followUserRequest) {
+        var followers = currentUser.get().getFollowing();
         if (followers != null && followers.size() > 0)
-            currentUser.get().getFollowers().add(followUserRequest.getTargetUsername());
+            currentUser.get().getFollowing().add(followUserRequest.getTargetUsername());
         else {
-            currentUser.get().setFollowers(new ArrayList<>() {
+            currentUser.get().setFollowing(new ArrayList<>() {
                 {
                     add(followUserRequest.getTargetUsername());
                 }
             });
         }
-
-        repository.save(currentUser.get());
     }
 
     public void unfollowUser(FollowUserRequest followUserRequest) {
         var currentUser = getUser(followUserRequest.getCurrentUsername());
-        var followers = currentUser.get().getFollowers();
+        var followers = currentUser.get().getFollowing();
         if (followers != null && followers.contains(followUserRequest.getTargetUsername())) {
             followers.remove(followUserRequest.getTargetUsername());
         }
         repository.save(currentUser.get());
     }
 
+    public boolean isFollowing(FollowUserRequest followUserRequest) {
+        var currentUser = getUser(followUserRequest.getCurrentUsername());
+        var followers = currentUser.get().getFollowing();
+        if (followers != null) {
+
+            return followers.contains(followUserRequest.getTargetUsername());
+        }
+        return false;
+    }
 }
 

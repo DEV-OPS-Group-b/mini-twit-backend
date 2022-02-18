@@ -22,5 +22,7 @@ public class TweetEntity {
     private String username;
     private LocalDateTime insertionDate;
     private String tweet;
-    private int flagged;
+    private boolean flagged;
+
+
 }

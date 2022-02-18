@@ -56,4 +56,9 @@ public class UserController {
         userService.unfollowUser(followUserRequest);
         return new ResponseEntity<>("done", HttpStatus.OK);
     }
+
+    @PostMapping("/isFollowing")
+    public ResponseEntity<Boolean> isFollowing(@Valid @RequestBody FollowUserRequest followUserRequest) {
+        return new ResponseEntity<>(userService.isFollowing(followUserRequest), HttpStatus.OK);
+    }
 }

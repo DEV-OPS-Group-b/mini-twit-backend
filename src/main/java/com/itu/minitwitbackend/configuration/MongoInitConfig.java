@@ -27,7 +27,7 @@ public class MongoInitConfig {
                         .username("me")
                         .email("me@gmail.com")
                         .password("password")
-                        .followers(new ArrayList<>() {
+                        .following(new ArrayList<>() {
                             {
                                 add("you");
                                 add("he");
@@ -38,7 +38,7 @@ public class MongoInitConfig {
                         .username("you")
                         .email("you@gmail.com")
                         .password("password")
-                        .followers(new ArrayList<>() {
+                        .following(new ArrayList<>() {
                             {
                                 add("me");
                                 add("he");
@@ -49,7 +49,7 @@ public class MongoInitConfig {
                         .username("he")
                         .email("he@gmail.com")
                         .password("password")
-                        .followers(new ArrayList<>()).build());
+                        .following(new ArrayList<>()).build());
             }
         };
 

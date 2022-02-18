@@ -142,13 +142,13 @@ public class UserControllerIT {
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(user2.get().getFollowers().size()).isEqualTo(1);
+        assertThat(user2.get().getFollowing().size()).isEqualTo(1);
     }
 
     @Test
     void unfollow_User_Success() {
         // arrange
-        testUser.setFollowers(new ArrayList<>(){{add("me");}});
+        testUser.setFollowing(new ArrayList<>(){{add("me");}});
         var savedUser = userRepository.save(testUser);
         var user = new FollowUserRequest(testUser.getUsername(),"me");
 
@@ -160,6 +160,37 @@ public class UserControllerIT {
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(user2.get().getFollowers().size()).isEqualTo(0);
+        assertThat(user2.get().getFollowing().size()).isEqualTo(0);
+    }
+
+    @Test
+    void isFollowing_True_Success() {
+        // arrange
+        testUser.setFollowing(new ArrayList<>(){{add("me");}});
+         userRepository.save(testUser);
+        var user = new FollowUserRequest(testUser.getUsername(),"me");
+
+        // act
+        ResponseEntity<Boolean> responseEntity = testRestTemplate.postForEntity(
+                "/devops/user/isFollowing", user, Boolean.class);
+
+        // assert
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody().booleanValue()).isEqualTo(true);
+    }
+
+    @Test
+    void isFollowing_False_Success() {
+        // arrange
+         userRepository.save(testUser);
+        var user = new FollowUserRequest(testUser.getUsername(),"me");
+
+        // act
+        ResponseEntity<Boolean> responseEntity = testRestTemplate.postForEntity(
+                "/devops/user/isFollowing", user, Boolean.class);
+
+        // assert
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody().booleanValue()).isEqualTo(false);
     }
 }

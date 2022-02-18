@@ -42,6 +42,6 @@ public class UserEntity {
     private String password;
 
     private String profilePicture;
-    private List<String> followers;
+    private List<String> following;
 
 }
