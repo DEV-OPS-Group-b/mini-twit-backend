@@ -113,7 +113,7 @@ public class UserControllerIT {
                 "/devops/user/login/she/pas", String.class);
 
         // assert
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
     }
     @Test

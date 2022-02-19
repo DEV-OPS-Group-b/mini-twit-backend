@@ -16,7 +16,8 @@ public class MongoInitConfig {
 
     @Bean
     CommandLineRunner commandLineRunner(UserRepository userRepository) {
-        userRepository.deleteAll();
+        userRepository.findUserEntityByUsername("admin")
+                .ifPresent(entity -> userRepository.deleteById(entity.getId()));
         return strings -> userRepository.saveAll(createMockUserEntity());
     }
 
