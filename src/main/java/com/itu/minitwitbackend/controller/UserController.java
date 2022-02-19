@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping("/login/{username}/{password}")
     public ResponseEntity login(@PathVariable String username, @PathVariable String password) {
         userService.validateUserCredentials(username, password);
-        return new ResponseEntity(HttpStatus.FOUND);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/follow")

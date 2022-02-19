@@ -16,6 +16,7 @@ public class MongoInitConfig {
 
     @Bean
     CommandLineRunner commandLineRunner(UserRepository userRepository) {
+        userRepository.deleteAll();
         return strings -> userRepository.saveAll(createMockUserEntity());
     }
 
@@ -23,7 +24,6 @@ public class MongoInitConfig {
 
         return new ArrayList<>() {
             {
-
                 add(UserEntity.builder()
                         .username("admin")
                         .email("admin@admin.com")
