@@ -14,42 +14,15 @@ import com.itu.minitwitbackend.repository.entity.UserEntity;
 @EnableMongoRepositories(basePackageClasses = UserRepository.class)
 public class MongoInitConfig {
 
-//    @Bean
-//    CommandLineRunner commandLineRunner(UserRepository userRepository) {
-//        return strings -> userRepository.saveAll(createMockUserEntity());
-//    }
+    @Bean
+    CommandLineRunner commandLineRunner(UserRepository userRepository) {
+        return strings -> userRepository.saveAll(createMockUserEntity());
+    }
 
     private List<UserEntity> createMockUserEntity() {
 
         return new ArrayList<>() {
             {
-                add(UserEntity.builder()
-                        .username("me")
-                        .email("me@gmail.com")
-                        .password("password")
-                        .following(new ArrayList<>() {
-                            {
-                                add("you");
-                                add("he");
-                            }
-                        }).build());
-
-                add(UserEntity.builder()
-                        .username("you")
-                        .email("you@gmail.com")
-                        .password("password")
-                        .following(new ArrayList<>() {
-                            {
-                                add("me");
-                                add("he");
-                            }
-                        }).build());
-
-                add(UserEntity.builder()
-                        .username("he")
-                        .email("he@gmail.com")
-                        .password("password")
-                        .following(new ArrayList<>()).build());
 
                 add(UserEntity.builder()
                         .username("admin")

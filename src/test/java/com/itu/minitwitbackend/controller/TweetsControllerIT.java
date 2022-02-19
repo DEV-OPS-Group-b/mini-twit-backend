@@ -42,17 +42,18 @@ public class TweetsControllerIT {
     void beforeEach() {
         tweetRepository.deleteAll();
         userRepository.deleteAll();
-        tweetRepository.save(TweetEntity.builder()
-                .username("me")
-                .insertionDate(LocalDateTime.now().format(DATE_TIME_FORMATTER))
-                .tweet("my first tweet, hello there")
-                .flagged(false)
-                .build());
 
         tweetRepository.save(TweetEntity.builder()
                 .username("me")
                 .insertionDate(LocalDateTime.of(2000, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
                 .tweet("my second tweet, hello there again")
+                .flagged(false)
+                .build());
+
+        tweetRepository.save(TweetEntity.builder()
+                .username("me")
+                .insertionDate(LocalDateTime.now().format(DATE_TIME_FORMATTER))
+                .tweet("my first tweet, hello there")
                 .flagged(false)
                 .build());
 
