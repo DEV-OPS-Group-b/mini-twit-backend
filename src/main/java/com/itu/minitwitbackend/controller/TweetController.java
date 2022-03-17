@@ -28,10 +28,11 @@ public class TweetController {
         return ResponseEntity.ok(tweetService.findByUsername(username));
     }
 
-    @GetMapping("/get-all-tweets")
-    public ResponseEntity<List<TweetEntity>> getAllTweets() {
-
-        return ResponseEntity.ok(tweetService.getAllTweetsSorted());
+    @GetMapping("/get-all-tweets/{batch-size}/{page-number}")
+    public ResponseEntity<List<TweetEntity>> getAllTweets(@PathVariable(value = "batch-size", required = false) int batchSize,
+                                                          @PathVariable(value = "page-number", required = false) int pageNumber) {
+        if (batchSize == 0) batchSize = 100;
+        return ResponseEntity.ok(tweetService.getAllTweetsSorted(batchSize, pageNumber));
     }
 
     @PostMapping("/add-tweet")

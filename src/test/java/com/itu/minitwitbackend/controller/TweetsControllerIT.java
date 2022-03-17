@@ -63,6 +63,17 @@ public class TweetsControllerIT {
                 .tweet("my last tweet, hello there")
                 .flagged(false)
                 .build());
+
+        for (int i = 0; i < 300; i++) {
+
+            tweetRepository.save(TweetEntity.builder()
+                    .username("me")
+                    .insertionDate(LocalDateTime.of(2000, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
+                    .tweet("my" + i + "tweet, hello there again")
+                    .flagged(false)
+                    .build());
+        }
+        var tweetsCounter = tweetRepository.findAll().size();
     }
 
     @Test
@@ -84,12 +95,17 @@ public class TweetsControllerIT {
         // arrange
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
         // act
-        ResponseEntity<Object[]> responseEntity = testRestTemplate.getForEntity("/devops/tweet/get-all-tweets", Object[].class);
+        ResponseEntity<Object[]> responseEntity = testRestTemplate.getForEntity("/devops/tweet/get-all-tweets/200/0", Object[].class);
+        ResponseEntity<Object[]> responseEntity2 = testRestTemplate.getForEntity("/devops/tweet/get-all-tweets/100/1", Object[].class);
+        ResponseEntity<Object[]> responseEntity3 = testRestTemplate.getForEntity("/devops/tweet/get-all-tweets/400/0", Object[].class);
 
         // assert
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(Objects.requireNonNull(responseEntity.getBody()).length).isEqualTo(3);
+        assertThat(Objects.requireNonNull(responseEntity.getBody()).length).isEqualTo(200);
+        assertThat(Objects.requireNonNull(responseEntity2.getBody()).length).isEqualTo(100);
+        assertThat(Objects.requireNonNull(responseEntity3.getBody()).length).isEqualTo(303);
         var firstTweet = Arrays.stream(responseEntity.getBody()).findFirst().get().toString();
         assertThat(firstTweet.contains("my first tweet, hello there")).isTrue();
 
@@ -175,7 +191,6 @@ public class TweetsControllerIT {
 
     }
 
-
     @Test
     void flag_Tweets_Unauthorized_Not_Admin() {
         // arrange
@@ -207,7 +222,6 @@ public class TweetsControllerIT {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
-
 
     @Test
     void flag_Tweets_Unauthorized_Property_Not_Set() {
