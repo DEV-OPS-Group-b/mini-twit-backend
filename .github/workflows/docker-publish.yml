@@ -26,8 +26,10 @@ jobs:
       - name: Adding secret
         env:
           APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
-        run: echo "secret added $APPINSIGHTS_INSTRUMENTATIONKEY"
+
+        run: export APPINSIGHTS_INSTRUMENTATIONKEY=${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
       - name: Build with Maven
+        export APPINSIGHTS_INSTRUMENTATIONKEY=${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
         run: mvn package -DskipTests
 
       # Login against a Docker registry
