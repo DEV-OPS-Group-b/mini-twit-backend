@@ -23,6 +23,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Adding secret
+        run: |
+          echo $DEV_PROP_FILE >> src/main/resources/application.properties
+          cat src/main/resources/application.properties
+        shell: bash
+        env:
+          DEV_PROP_FILE: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
+          
       # Login against a Docker registry
       # https://github.com/docker/login-action
       - name: Log into registry
