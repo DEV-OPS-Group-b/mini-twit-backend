@@ -29,7 +29,6 @@ jobs:
 
         run: export APPINSIGHTS_INSTRUMENTATIONKEY=${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
       - name: Build with Maven
-        export APPINSIGHTS_INSTRUMENTATIONKEY=${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
         run: mvn package -DskipTests
 
       # Login against a Docker registry
