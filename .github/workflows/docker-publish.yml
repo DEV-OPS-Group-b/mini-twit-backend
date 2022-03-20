@@ -23,12 +23,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Adding secret
+      - name: export secret
+        run: export APPINSIGHTS_INSTRUMENTATIONKEY=${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
+
+      - name: Build with Maven
         env:
           APPINSIGHTS_INSTRUMENTATIONKEY: ${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
-
-        run: export APPINSIGHTS_INSTRUMENTATIONKEY=${{secrets.APPINSIGHTS_INSTRUMENTATIONKEY}}
-      - name: Build with Maven
         run: mvn package -DskipTests
 
       # Login against a Docker registry
