@@ -6,7 +6,7 @@ https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-log
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <appender name="aiAppender"
               class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
-        <instrumentationKey>${INSTRUMENTATION_KEY}</instrumentationKey>
+        <instrumentationKey>bf7ee660-cf6b-4f0c-9dff-721d35aaa455</instrumentationKey>
     </appender>
     <root level="trace">
         <appender-ref ref="aiAppender"/>
