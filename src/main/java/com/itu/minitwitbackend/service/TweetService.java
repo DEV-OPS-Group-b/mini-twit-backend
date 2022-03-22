@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.itu.minitwitbackend.controller.api.model.TweetFlagRequest;
@@ -42,8 +43,8 @@ public class TweetService {
 
     public List<TweetEntity> getAllTweetsSorted(int pageSize, int pageNumber) {
         log.info("getting all tweets pageSize {}, pageNumber {}", pageSize, pageNumber);
-
-        Pageable paging = PageRequest.of(pageNumber, pageSize);
+        Pageable paging = PageRequest.of(pageNumber,
+                pageSize, Sort.by("id").descending());
         var sortedTweets = tweetRepository.findAll(paging).get().collect(Collectors.toList());
         Collections.sort(sortedTweets, Comparator.comparing(TweetEntity::getInsertionDate).reversed());
         return sortedTweets;
