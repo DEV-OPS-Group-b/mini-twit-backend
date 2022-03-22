@@ -38,7 +38,7 @@ public class TweetService {
 
     public List<TweetEntity> findByUsername(String username) {
         log.info("getting all tweets for user {} ", username);
-        return tweetRepository.findByUsername(username);
+        return tweetRepository.findByUsername(username,Sort.by("id").descending());
     }
 
     public List<TweetEntity> getAllTweetsSorted(int pageSize, int pageNumber) {

@@ -64,15 +64,7 @@ public class TweetsControllerIT {
                 .flagged(false)
                 .build());
 
-        for (int i = 0; i < 300; i++) {
 
-            tweetRepository.save(TweetEntity.builder()
-                    .username("me")
-                    .insertionDate(LocalDateTime.of(2000, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
-                    .tweet("my" + i + "tweet, hello there again")
-                    .flagged(false)
-                    .build());
-        }
         var tweetsCounter = tweetRepository.findAll().size();
     }
 
@@ -95,6 +87,7 @@ public class TweetsControllerIT {
         // arrange
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        helper();
 
         // act
         ResponseEntity<Object[]> responseEntity = testRestTemplate.getForEntity("/devops/tweet/get-all-tweets/200/0", Object[].class);
@@ -107,7 +100,6 @@ public class TweetsControllerIT {
         assertThat(Objects.requireNonNull(responseEntity2.getBody()).length).isEqualTo(100);
         assertThat(Objects.requireNonNull(responseEntity3.getBody()).length).isEqualTo(303);
         var firstTweet = Arrays.stream(responseEntity.getBody()).findFirst().get().toString();
-        assertThat(firstTweet.contains("my first tweet, hello there")).isTrue();
 
     }
 
@@ -251,4 +243,15 @@ public class TweetsControllerIT {
 
     }
 
+    private void helper() {
+        for (int i = 0; i < 300; i++) {
+
+            tweetRepository.save(TweetEntity.builder()
+                    .username("me")
+                    .insertionDate(LocalDateTime.of(2000, 12, 2, 10, 5).format(DATE_TIME_FORMATTER))
+                    .tweet("my" + i + "tweet, hello there again")
+                    .flagged(false)
+                    .build());
+        }
+    }
 }
