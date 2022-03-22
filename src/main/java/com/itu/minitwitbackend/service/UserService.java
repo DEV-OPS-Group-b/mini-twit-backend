@@ -3,7 +3,6 @@ package com.itu.minitwitbackend.service;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.itu.minitwitbackend.controller.api.model.FollowUserRequest;
@@ -19,12 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
     private final UserRepository repository;
 
-    private final MongoTemplate template;
-
     @Autowired
-    public UserService(UserRepository repository, MongoTemplate template) {
+    public UserService(UserRepository repository) {
         this.repository = repository;
-        this.template = template;
     }
 
     public Optional<UserEntity> getUser(String username) {
@@ -41,7 +37,6 @@ public class UserService {
             log.error("The username is already taken");
             throw new UserAlreadyExistsException("The username is already taken");
         }
-        // TODO make the url for the image
         user.setIsAdmin(false);
         var userId = repository.save(user).getId();
         log.info("newly created userId {} ", userId);
@@ -61,22 +56,22 @@ public class UserService {
     public void followUser(FollowUserRequest followUserRequest) {
         var currentUser = getUser(followUserRequest.getCurrentUsername());
         updateFollowing(currentUser, followUserRequest);
+        log.info("user {} want to follow user: {}", followUserRequest.getCurrentUsername(), followUserRequest.getTargetUsername());
         repository.save(currentUser.get());
     }
 
     private void updateFollowing(Optional<UserEntity> currentUser, FollowUserRequest followUserRequest) {
         var followers = currentUser.get().getFollowing();
-        if (followers != null && followers.size() > 0){
-            if(followers.contains(followUserRequest.getTargetUsername())){
+        if (followers != null && followers.size() > 0) {
+            if (followers.contains(followUserRequest.getTargetUsername())) {
                 log.info("the user {} is already following username : {}",
-                        followUserRequest.getCurrentUsername(),followUserRequest.getTargetUsername());
+                        followUserRequest.getCurrentUsername(), followUserRequest.getTargetUsername());
                 return;
             }
             log.info(" adding username {} to the following list of user {} ", followUserRequest.getTargetUsername(),
                     followUserRequest.getCurrentUsername());
             currentUser.get().getFollowing().add(followUserRequest.getTargetUsername());
-        }
-        else {
+        } else {
             log.info(" adding username {} to the following list of user {} ", followUserRequest.getTargetUsername(),
                     followUserRequest.getCurrentUsername());
             currentUser.get().setFollowing(new ArrayList<>() {
@@ -89,22 +84,24 @@ public class UserService {
 
     public void unfollowUser(FollowUserRequest followUserRequest) {
         var currentUser = getUser(followUserRequest.getCurrentUsername());
+        log.info("user {} want to unfollow user: {}", followUserRequest.getCurrentUsername(), followUserRequest.getTargetUsername());
         var followers = currentUser.get().getFollowing();
         if (followers != null && followers.contains(followUserRequest.getTargetUsername())) {
 
             log.info("removing username {} from the following list of username {} ",
-                     followUserRequest.getTargetUsername(),followUserRequest.getCurrentUsername());
+                    followUserRequest.getTargetUsername(), followUserRequest.getCurrentUsername());
 
             followers.remove(followUserRequest.getTargetUsername());
             repository.save(currentUser.get());
         } else {
             log.info("the username {} does not exist in the following list of username {} ",
-                    followUserRequest.getTargetUsername(),followUserRequest.getCurrentUsername());
+                    followUserRequest.getTargetUsername(), followUserRequest.getCurrentUsername());
         }
     }
 
     public boolean isFollowing(FollowUserRequest followUserRequest) {
         var currentUser = getUser(followUserRequest.getCurrentUsername());
+
         var followers = currentUser.get().getFollowing();
         if (followers != null) {
 

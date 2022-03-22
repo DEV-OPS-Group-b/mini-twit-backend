@@ -36,10 +36,13 @@ public class TweetService {
     }
 
     public List<TweetEntity> findByUsername(String username) {
+        log.info("getting all tweets for user {} ", username);
         return tweetRepository.findByUsername(username);
     }
 
-    public List<TweetEntity> getAllTweetsSorted(int pageSize,int pageNumber) {
+    public List<TweetEntity> getAllTweetsSorted(int pageSize, int pageNumber) {
+        log.info("getting all tweets pageSize {}, pageNumber {}", pageSize, pageNumber);
+
         Pageable paging = PageRequest.of(pageNumber, pageSize);
         var sortedTweets = tweetRepository.findAll(paging).get().collect(Collectors.toList());
         Collections.sort(sortedTweets, Comparator.comparing(TweetEntity::getInsertionDate).reversed());
@@ -49,10 +52,14 @@ public class TweetService {
     public TweetEntity saveTweet(TweetEntity tweet) {
         LocalDateTime now = LocalDateTime.now();
         tweet.setInsertionDate(now.format(DATE_TIME_FORMATTER));
+        log.info("saving a new tweet at {}, for user {}", now, tweet.getUsername());
+
         return tweetRepository.save(tweet);
     }
 
     public void flagTweet(TweetFlagRequest tweetFlagRequest) {
+        log.info("flagging tweet {}", tweetFlagRequest.getTweetId());
+
         var user = userRepository.findByUsernameAndPassword(
                 tweetFlagRequest.getUsername(), tweetFlagRequest.getPassword());
         validateUserPermission(user);
