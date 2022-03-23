@@ -61,7 +61,7 @@ public class UserService {
         try {
             currentUser = getUser(followUserRequest.getCurrentUsername());
         } catch (UserNotFoundException e) {
-            log.error("recover from database delete on user{} ", followUserRequest.getCurrentUsername());
+            log.error("recover from database delete on user {} ", followUserRequest.getCurrentUsername());
             var newUser = UserEntity.builder().username(followUserRequest.getCurrentUsername()).password("password").isAdmin(false).build();
             currentUser = Optional.of(userRepository.save(newUser));
         }

@@ -1,0 +1,16 @@
+<!--
+Documentation:
+https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html
+-->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <springProfile name="aks">
+        <appender name="ai" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="ai"/>
+        </root>
+    </springProfile>
+</configuration>
