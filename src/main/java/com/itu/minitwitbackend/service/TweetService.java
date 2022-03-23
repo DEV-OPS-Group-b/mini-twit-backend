@@ -7,9 +7,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.itu.minitwitbackend.controller.api.model.TweetFlagRequest;
@@ -36,11 +38,13 @@ public class TweetService {
         this.userRepository = userRepository;
     }
 
+    @Cacheable("userTweets")
     public List<TweetEntity> findByUsername(String username) {
         log.info("getting all tweets for user {} ", username);
-        return tweetRepository.findByUsername(username,Sort.by("id").descending());
+        return tweetRepository.findByUsername(username, Sort.by("id").descending());
     }
 
+    @Cacheable("sortedTweets")
     public List<TweetEntity> getAllTweetsSorted(int pageSize, int pageNumber) {
         log.info("getting all tweets pageSize {}, pageNumber {}", pageSize, pageNumber);
         Pageable paging = PageRequest.of(pageNumber,
@@ -80,7 +84,6 @@ public class TweetService {
                     throw new TweetNotFoundException("tweet not found");
                 });
     }
-
 
     private void validateUserPermission(Optional<UserEntity> user) {
         if (user.isPresent() && (user.get().getIsAdmin() == null || !user.get().getIsAdmin())) {

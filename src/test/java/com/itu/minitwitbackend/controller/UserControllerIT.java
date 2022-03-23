@@ -146,6 +146,23 @@ public class UserControllerIT {
     }
 
     @Test
+    void follow_User_Fails_Db_Recovery() {
+        // arrange
+//        var savedUser = userRepository.save(testUser);
+        var user = new FollowUserRequest(testUser.getUsername(),"he");
+
+        // act
+        ResponseEntity<String> responseEntity = testRestTemplate.postForEntity(
+                "/devops/user/follow", user, String.class);
+
+        var user2 = userRepository.findUserEntityByUsername(testUser.getUsername());
+
+        // assert
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(user2.get().getFollowing().size()).isEqualTo(1);
+    }
+
+    @Test
     void unfollow_User_Success() {
         // arrange
         testUser.setFollowing(new ArrayList<>(){{add("me");}});

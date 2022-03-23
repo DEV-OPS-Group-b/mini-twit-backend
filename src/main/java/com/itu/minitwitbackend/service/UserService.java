@@ -3,6 +3,7 @@ package com.itu.minitwitbackend.service;
 import java.util.ArrayList;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.itu.minitwitbackend.controller.api.model.FollowUserRequest;
@@ -16,34 +17,36 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class UserService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository repository) {
-        this.repository = repository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
+    @Cacheable("findUser")
     public Optional<UserEntity> getUser(String username) {
         log.info("getting user with username {} ", username);
-        var user = repository.findUserEntityByUsername(username)
+        var user = userRepository.findUserEntityByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found in the database " + username));
         return Optional.of(user);
     }
 
-    public void createNewUser(UserEntity user) {
+    public String createNewUser(UserEntity user) {
         log.info("creating a new user {} ", user.toString());
 
-        if (repository.findUserEntityByUsername(user.getUsername()).isPresent()) {
+        if (userRepository.findUserEntityByUsername(user.getUsername()).isPresent()) {
             log.error("The username is already taken");
             throw new UserAlreadyExistsException("The username is already taken");
         }
         user.setIsAdmin(false);
-        var userId = repository.save(user).getId();
+        var userId = userRepository.save(user).getId();
         log.info("newly created userId {} ", userId);
+        return userId;
     }
 
     public void validateUserCredentials(String username, String password) {
-        repository.findByUsernameAndPassword(username, password)
+        userRepository.findByUsernameAndPassword(username, password)
                 .ifPresentOrElse(u ->
                                 log.info("user {} has valid credentials, log in successfully ", username)
                         , () -> {
@@ -54,10 +57,18 @@ public class UserService {
     }
 
     public void followUser(FollowUserRequest followUserRequest) {
-        var currentUser = getUser(followUserRequest.getCurrentUsername());
+        Optional<UserEntity> currentUser;
+        try {
+            currentUser = getUser(followUserRequest.getCurrentUsername());
+        } catch (UserNotFoundException e) {
+            log.error("recover from database delete on user{} ", followUserRequest.getCurrentUsername());
+            var newUser = UserEntity.builder().username(followUserRequest.getCurrentUsername()).password("password").isAdmin(false).build();
+            currentUser = Optional.of(userRepository.save(newUser));
+        }
+
         updateFollowing(currentUser, followUserRequest);
         log.info("user {} want to follow user: {}", followUserRequest.getCurrentUsername(), followUserRequest.getTargetUsername());
-        repository.save(currentUser.get());
+        userRepository.save(currentUser.get());
     }
 
     private void updateFollowing(Optional<UserEntity> currentUser, FollowUserRequest followUserRequest) {
@@ -92,7 +103,7 @@ public class UserService {
                     followUserRequest.getTargetUsername(), followUserRequest.getCurrentUsername());
 
             followers.remove(followUserRequest.getTargetUsername());
-            repository.save(currentUser.get());
+            userRepository.save(currentUser.get());
         } else {
             log.info("the username {} does not exist in the following list of username {} ",
                     followUserRequest.getTargetUsername(), followUserRequest.getCurrentUsername());
