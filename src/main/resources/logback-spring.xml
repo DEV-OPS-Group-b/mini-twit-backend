@@ -9,7 +9,7 @@ https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-log
     <appender name="ai" class="com.microsoft.applicationinsights.logback.ApplicationInsightsAppender">
     </appender>
 
-    <root level="INFO">
+    <root level="TRACE">
       <appender-ref ref="ai"/>
     </root>
   </springProfile>

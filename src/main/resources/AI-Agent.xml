@@ -5,4 +5,8 @@
             <Logging threshold="info"/>
         </BuiltIn>
     </Instrumentation>
+    <AgentLogger type="CONSOLE"><!-- or "CONSOLE" to print to stderr -->
+        <Level>TRACE</Level>
+        <UniquePrefix>AI</UniquePrefix>
+    </AgentLogger>
 </ApplicationInsightsAgent>
