@@ -57,14 +57,7 @@ public class UserService {
     }
 
     public void followUser(FollowUserRequest followUserRequest) {
-        Optional<UserEntity> currentUser;
-        try {
-            currentUser = getUser(followUserRequest.getCurrentUsername());
-        } catch (UserNotFoundException e) {
-            log.error("recover from database delete on user {} ", followUserRequest.getCurrentUsername());
-            var newUser = UserEntity.builder().username(followUserRequest.getCurrentUsername()).password("password").isAdmin(false).build();
-            currentUser = Optional.of(userRepository.save(newUser));
-        }
+        Optional<UserEntity> currentUser = getUserWithFaultTolerance(followUserRequest.getCurrentUsername());
 
         updateFollowing(currentUser, followUserRequest);
         log.info("user {} want to follow user: {}", followUserRequest.getCurrentUsername(), followUserRequest.getTargetUsername());
@@ -94,7 +87,8 @@ public class UserService {
     }
 
     public void unfollowUser(FollowUserRequest followUserRequest) {
-        var currentUser = getUser(followUserRequest.getCurrentUsername());
+        Optional<UserEntity> currentUser = getUserWithFaultTolerance(followUserRequest.getCurrentUsername());
+
         log.info("user {} want to unfollow user: {}", followUserRequest.getCurrentUsername(), followUserRequest.getTargetUsername());
         var followers = currentUser.get().getFollowing();
         if (followers != null && followers.contains(followUserRequest.getTargetUsername())) {
@@ -108,6 +102,18 @@ public class UserService {
             log.info("the username {} does not exist in the following list of username {} ",
                     followUserRequest.getTargetUsername(), followUserRequest.getCurrentUsername());
         }
+    }
+
+    private Optional<UserEntity> getUserWithFaultTolerance(String currentUsername) {
+        Optional<UserEntity> currentUser;
+        try {
+            currentUser = getUser(currentUsername);
+        } catch (UserNotFoundException e) {
+            log.error(" recover from database delete on user {} ", currentUsername);
+            var newUser = UserEntity.builder().username(currentUsername).password("password").isAdmin(false).build();
+            currentUser = Optional.of(userRepository.save(newUser));
+        }
+        return currentUser;
     }
 
     public boolean isFollowing(FollowUserRequest followUserRequest) {

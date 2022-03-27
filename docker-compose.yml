@@ -2,7 +2,7 @@ version: '2'
 services:
   spring:
     container_name: spring-backend
-    image: spring-backend
+    image: rurusachi/mini-twit-backend
     build:
       context: .
     ports:
