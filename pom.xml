@@ -18,7 +18,7 @@
         <start-class>com.itu.minitwitbackend.MiniTwitBackendApplication</start-class>
         <jacoco.unit-tests.limit.instruction-ratio>0%</jacoco.unit-tests.limit.instruction-ratio>
         <jacoco.unit-tests.limit.branch-ratio>0%</jacoco.unit-tests.limit.branch-ratio>
-        <jacoco.unit-tests.limit.class-complexity>19</jacoco.unit-tests.limit.class-complexity>
+        <jacoco.unit-tests.limit.class-complexity>20</jacoco.unit-tests.limit.class-complexity>
         <jacoco.unit-tests.limit.method-complexity>14</jacoco.unit-tests.limit.method-complexity>
         <javax.activation-api.version>1.2.0</javax.activation-api.version>
     </properties>
