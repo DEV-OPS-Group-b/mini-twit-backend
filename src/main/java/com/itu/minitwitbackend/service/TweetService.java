@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,13 +36,13 @@ public class TweetService {
         this.userRepository = userRepository;
     }
 
-    @Cacheable("userTweets")
+    @CachePut ("userTweets")
     public List<TweetEntity> findByUsername(String username) {
         log.info("getting all tweets for user {} ", username);
         return tweetRepository.findByUsername(username, Sort.by("id").descending());
     }
 
-    @Cacheable("sortedTweets")
+    @CachePut("sortedTweets")
     public List<TweetEntity> getAllTweetsSorted(int pageSize, int pageNumber) {
         log.info("getting all tweets pageSize {}, pageNumber {}", pageSize, pageNumber);
         Pageable paging = PageRequest.of(pageNumber,
