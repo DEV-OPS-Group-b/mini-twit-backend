@@ -2,8 +2,6 @@ package com.itu.minitwitbackend.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,7 +9,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.itu.minitwitbackend.controller.api.model.TweetFlagRequest;
@@ -50,7 +47,6 @@ public class TweetService {
         Pageable paging = PageRequest.of(pageNumber,
                 pageSize, Sort.by("id").descending());
         var sortedTweets = tweetRepository.findAll(paging).get().collect(Collectors.toList());
-        Collections.sort(sortedTweets, Comparator.comparing(TweetEntity::getInsertionDate).reversed());
         return sortedTweets;
     }
 
