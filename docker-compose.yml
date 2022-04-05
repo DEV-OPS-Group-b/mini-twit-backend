@@ -1,11 +1,4 @@
 version: '2'
-networks:
-  default:
-    external:
-      name: prometheus_default
-  isolated-network:
-    driver: bridge
-
 services:
   spring:
     container_name: spring-backend
@@ -18,30 +11,10 @@ services:
       - isolated-network
     depends_on:
       - mongo
-      - grafana
-      - prometheus
-
   mongo:
     image: mongo
     ports:
       - '27017:27017'
-
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - isolated-network
-      - default
-
-
-  grafana:
-    image: grafana/grafana:4.5.2
-    ports:
-      - "3000:3000"
-    networks:
-      - isolated-network
-      - default
+networks:
+  isolated-network:
+    driver: bridge
